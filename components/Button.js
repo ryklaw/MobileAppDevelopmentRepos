@@ -45,7 +45,7 @@ async function fetchImageDataAndConvert() {
 export default function Button ({ label, theme, onPress }) {
   const [modalVisible, setModalVisible] = useState(false);
   if( theme === 'vaulttheme') {
-    //fetchImageDataAndConvert()
+    fetchImageDataAndConvert()
     return(
       <View>
         <Modal
@@ -59,7 +59,7 @@ export default function Button ({ label, theme, onPress }) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Your Vault</Text>
-            <ImageViewer imageSource={PlaceholderImage}/>
+            <ImageViewer imageSource={imageUrl}/>
               <Pressable
                 style={[styles.modalContainer, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>

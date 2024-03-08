@@ -32,6 +32,24 @@ export async function openDatabase(){
   console.log("Image Table Created")
   return SQLite.openDatabase('SavedPhotos.db');
 }
+export async function EraseDatabase(){
+  const table = "Images_table";
+  const db= SQLite.openDatabase('SavedPhotos.db');
+  db.transaction((tx)=> {
+    tx.executeSql(`
+      DROP TABLE Image`,
+      [table],
+      (tx, result) => {
+        console.log("DBS");
+      },
+      (tx, error) => {
+        console.log(error);
+      }
+    );
+  });
+  console.log("Table Deleted")
+  return SQLite.openDatabase('SavedPhotos.db recreated');
+}
 
 export default function App() {
   //openDatabase()
@@ -62,6 +80,7 @@ export default function App() {
           <Button theme="primary" label="Choose an Image" onPress={pickImageAsync}/>
           <Button theme="primary" label="Save to Vault" onPress={SaveToDatabase}/>
           <Button theme="vaulttheme" label="Open Vault"/>
+          <Button theme="primary" label="Erase Vault" onPress={EraseDatabase}/>
         </View>
       </View>
     );
