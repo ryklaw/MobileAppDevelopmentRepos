@@ -5,30 +5,27 @@ import ImageViewer from './ImageViewer.js';
 const PlaceholderImage = require('../assets/images/download.jpg');
 import { openDatabase } from '../App.js';
 
-async function fetchImageDataAndConvert() {
+async function fetchImageDataFromDatabase() {
   try {
-    // Open the database
     const db = await openDatabase();
-    // Execute a SQL query to fetch BLOB data
+
+    // Execute a SQL query to fetch all rows from the Image table
     db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM Image',
         [],
         (_, { rows }) => {
           const len = rows.length;
-          console.log(`Rows found: ${len}`);
+          console.log(`Total rows retrieved: ${len}`);
+
+          // Iterate over each row
           for (let i = 0; i < len; i++) {
             const { imageData } = rows.item(i);
-            console.log(`ImageData retrieved`);
-            // Convert the retrieved BLOB data to a Blob object
+            console.log(`ImageData retrieved for row ${i + 1}`);
+            
             const blob = new Blob([imageData], { type: 'image/jpeg' });
-
-            // Create a URL for the Blob object
             const imageUrl = URL.createObjectURL(blob);
-
-            // Use the imageUrl as needed (e.g., display in an <img> tag)
-            console.log(`Image URL: ${imageUrl}`);
-            return(imageUrl)
+            console.log(`Image URL for row ${i + 1}: ${imageUrl}`);
           }
         },
         (_, error) => {
@@ -45,7 +42,8 @@ async function fetchImageDataAndConvert() {
 export default function Button ({ label, theme, onPress }) {
   const [modalVisible, setModalVisible] = useState(false);
   if( theme === 'vaulttheme') {
-    fetchImageDataAndConvert()
+    // fetchImageDataAndConvert()
+    fetchImageDataFromDatabase();
     return(
       <View>
         <Modal
@@ -59,7 +57,7 @@ export default function Button ({ label, theme, onPress }) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Your Vault</Text>
-            <ImageViewer imageSource={imageUrl}/>
+            <ImageViewer imageSource={PlaceholderImage}/>
               <Pressable
                 style={[styles.modalContainer, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>

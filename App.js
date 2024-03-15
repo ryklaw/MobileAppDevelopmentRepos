@@ -37,18 +37,24 @@ export async function EraseDatabase(){
   const db= SQLite.openDatabase('SavedPhotos.db');
   db.transaction((tx)=> {
     tx.executeSql(`
-      DROP TABLE Image`,
+      DROP TABLE Image
+         `,
       [table],
       (tx, result) => {
-        console.log("DBS");
+        schedulePushNotification({
+          title:'Vault Successfully Erased',
+          body:'',
+          data:'data!'
+        })
       },
       (tx, error) => {
         console.log(error);
       }
     );
   });
+  
   console.log("Table Deleted")
-  return SQLite.openDatabase('SavedPhotos.db recreated');
+  return SQLite.openDatabase('SavedPhotos.db');
 }
 
 export default function App() {
