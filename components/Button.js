@@ -2,53 +2,63 @@ import { StyleSheet, View, Pressable, Text, Alert, Modal } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React, { useState} from 'react';
 import ImageViewer from './ImageViewer.js';
-const PlaceholderImage = require('../assets/images/download.jpg');
+//const PlaceholderImage = require('../assets/images/download.jpg');
 import { openDatabase } from '../App.js';
 
-async function fetchImageDataFromDatabase() {
-  try {
-    const db = await openDatabase();
-
-    // Execute a SQL query to fetch all rows from the Image table
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM Image',
-        [],
-        (_, { rows }) => {
-          const len = rows.length;
-          console.log(`Total rows retrieved: ${len}`);
-
-          // Iterate over each row
-          for (let i = 0; i < len; i++) {
-            const { imageData } = rows.item(i);
-            console.log(`ImageData retrieved for row ${i + 1}`);
-            
-            const blob = new Blob([imageData], { type: 'image/jpeg' });
-            const imageUrl = URL.createObjectURL(blob);
-            console.log(`Image URL for row ${i + 1}: ${imageUrl}`);
-          }
-        },
-        (_, error) => {
-          console.log('Error occurred while fetching data from database:', error);
-        }
-      );
-    });
-  } catch (error) {
-    console.error('Error while opening database:', error);
-  }
-}
-
-
+picturelist=[];
 export default function Button ({ label, theme, onPress }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [picturedata, setpicturedata] = useState(picturelist);
   if( theme === 'vaulttheme') {
     // fetchImageDataAndConvert()
-    fetchImageDataFromDatabase();
+    async function fetchImageDataFromDatabase() {
+      try {
+        const db = await openDatabase();
+    
+        // Execute a SQL query to fetch all rows from the Image table
+        db.transaction(tx => {
+          tx.executeSql(
+            'SELECT * FROM Image',
+            [],
+            (_, { rows }) => {
+              const len = rows.length;
+              console.log(`Total rows retrieved: ${len}`);
+    
+              // Iterate over each row
+              for (let i = 0; i < len; i++) {
+                const { imageData } = rows.item(i);
+                console.log(`ImageData retrieved for row ${i + 1}`);
+                
+                const blob = new Blob([imageData], { type: 'image/jpeg' });
+                const imageUrl = URL.createObjectURL(blob);
+                console.log(`Image URL for row ${i + 1}: ${imageUrl}`);
+                function append(){
+                  newlist= picturelist.push(imageUrl)
+                  setpicturedata(newlist)
+                }
+                append();
+                console.log(picturelist)
+            }},
+            (_, error) => {
+              console.log('Error occurred while fetching data from database:', error);
+            }
+          );
+        });
+      } catch (error) {
+        console.error('Error while opening database:', error);
+      }
+    }
+    function all(){
+      fetchImageDataFromDatabase()
+      setModalVisible(true)
+    }
+
+
     return(
-      <View>
+      <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}>
         <Modal
           animationType="slide"
-          transparent={true}
+          //transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
@@ -57,7 +67,7 @@ export default function Button ({ label, theme, onPress }) {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Your Vault</Text>
-            <ImageViewer imageSource={PlaceholderImage}/>
+            <ImageViewer imageSource={picturedata}/>
               <Pressable
                 style={[styles.modalContainer, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>
@@ -67,9 +77,15 @@ export default function Button ({ label, theme, onPress }) {
           </View>
         </Modal>
         <Pressable
-          style={[styles.buttonContainer, styles.buttonOpen, { backgroundColor: "white" }]}
-          onPress={() => setModalVisible(true)}>
-          <Text style={[styles.buttonLabel, { color: "black"}]}>{label}</Text>
+          style={[styles.button, { backgroundColor: "#fff" }]}
+          onPress={all()}>
+           <FontAwesome
+              name="picture-o"
+              size={18}
+              color="#25292e"
+              style={styles.buttonIcon}
+            />
+            <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
         </Pressable>
       </View>
     )
