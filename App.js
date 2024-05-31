@@ -397,7 +397,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Notifications from 'expo-notifications';
 import { schedulePushNotification } from './components/Notifications.js';
 
-const PlaceholderImage = require('./assets/images/download.jpg');
+const PlaceholderImage = require('./assets/images/RealImage.jpg');
 
 const INITIAL_REGION = {
   latitude: 37.33,
